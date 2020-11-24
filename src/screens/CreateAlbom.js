@@ -46,29 +46,28 @@ saveFile = async (path, name) => {
 };
 
 const download = () => {
+  try {
+    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+    PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+  } catch (err) {
+    // console.warn(err);
+  }
   let dirs = RNFetchBlob.fs.dirs;
+  // const config = RNFetchBlob.config({
+  //   //  добавляем этот параметр, который сохраняет данные ответа в виде файла,
+  //   //  это намного эффективнее.
+
+  //   notification: true,
+
+  // });
+  // console.log(config);
+
   RNFetchBlob.config({
-    //  добавляем этот параметр, который сохраняет данные ответа в виде файла,
-    //  это намного эффективнее.
+    path: '/storage/emulated/0/custome_galery' + '/qwer.jpg',
     fileCache: false,
-    notification: true,
-    path: '/storage/emulated/0/custome_galery/qwer.jpg',
   })
-    .fetch(
-      ' GET ',
-      'https://shkolazhizni.ru/img/content/i133/133607_or.jpg',
-      {},
-    )
-    .then((res) => {
-      console.log('assssssssssssssddddd', res.base64());
-      console.log('res', res);
-      res.readFile('base64').then((r) => {
-        const fs = RNFetchBlob.fs;
-        const NEW_FILE_PATH = '/storage/emulated/0/custome_galery/qwer2.jpg';
-        fs.writeFile(NEW_FILE_PATH, `data:image/png;base64,${r}`, 'base64');
-      });
-    })
-    .catch((err) => console.log(err));
+    .fetch('GET', 'https://shkolazhizni.ru/img/content/i133/133607_or.jpg')
+    .catch((err) => console.log('err', err));
 };
 
 export default () => {
