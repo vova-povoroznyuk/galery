@@ -1,8 +1,22 @@
-import React from 'react';
-import {Text, TouchableOpacity, View, Image, Linking} from 'react-native';
-import RNFetchBlob from 'rn-fetch-blob';
+import React, {useEffect} from 'react';
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  TextInput,
+  StyleSheet,
+  FlatList,
+} from 'react-native';
 
 import {PermissionsAndroid} from 'react-native';
+import creatDir from '../utils/createDir';
+import {rootDirPath} from '../constants';
+import RNFetchBlob from 'rn-fetch-blob';
+import Item from '../component/ImageItem';
+
+import useStore from '../utils/useStore';
+import {URL} from '../constants';
+
 const counter = {
   number: 0,
   getNumber() {
@@ -11,79 +25,83 @@ const counter = {
   },
 };
 
-saveFile = async (path, name) => {
-  try {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    );
-    const read = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('Permission granted');
-
-      const fs = RNFetchBlob.fs;
-      // const base64 = RNFetchBlob.base64;
-
-      const dirs = RNFetchBlob.fs.dirs;
-      // console.log(fs);
-      if (!dirs.Custome_Galery) {
-        const Custome_Galery = '/storage/emulated/0/custome_galery';
-        RNFetchBlob.fs.mkdir(Custome_Galery).catch((err) => {
-          console.log(err);
-        });
-        dirs.Custome_Galery = Custome_Galery;
-      }
-      const NEW_FILE_PATH =
-        dirs.Custome_Galery + `/file${counter.getNumber()}.txt`;
-      fs.createFile(NEW_FILE_PATH, 'foo', 'utf8');
-    } else {
-      // console.log('Permission denied');
-    }
-  } catch (err) {
-    // console.warn(err);
-  }
-};
-
-const download = () => {
+const download = (name, url, albomName) => {
   try {
     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
   } catch (err) {
-    // console.warn(err);
+    console.warn(err);
   }
-  let dirs = RNFetchBlob.fs.dirs;
-  // const config = RNFetchBlob.config({
-  //   //  добавляем этот параметр, который сохраняет данные ответа в виде файла,
-  //   //  это намного эффективнее.
-
-  //   notification: true,
-
-  // });
-  // console.log(config);
-
   RNFetchBlob.config({
-    path: '/storage/emulated/0/custome_galery' + '/qwer.jpg',
+    path:
+      '/storage/emulated/0/custome_galery' + `/${albomName}` + `/${name}.jpg`,
     fileCache: false,
   })
-    .fetch('GET', 'https://shkolazhizni.ru/img/content/i133/133607_or.jpg')
+    .fetch('GET', url)
     .catch((err) => console.log('err', err));
+};
+const createAlbomDir = (name) => {
+  if (name) {
+    const path = rootDirPath + '/' + name;
+    RNFetchBlob.fs.isDir(path).then((res) => {
+      res || creatDir(path);
+    });
+  }
 };
 
 export default () => {
+  const [state, setName, addImage, getData] = useStore();
+  useEffect(() => getData(URL), []);
+  const data = state.data.slice(0, 5);
+  const createAlbom = () => {
+    if (state.albomName) {
+      createAlbomDir(state.albomName);
+      state.imageArr.forEach((element) => {
+        download(`image${counter.getNumber()}`, element, state.albomName);
+      });
+    }
+  };
+  console.log('update');
+  const renderItem = ({item}) => (
+    <Item
+      data={item}
+      addImage={() => addImage(item.url)}
+      isCheck={state.imageArr.includes(item.url)}
+    />
+  );
   return (
-    <View>
-      <Image
-        source={{uri: 'https://shkolazhizni.ru/img/content/i133/133607_or.jpg'}}
-        resizeMod="contain"
-        style={{width: 300, height: 300}}
+    <View style={style.constainer}>
+      <TextInput
+        style={style.input}
+        onChangeText={setName}
+        value={state.albomName}
       />
-      <TouchableOpacity onPress={download}>
-        <Text>download</Text>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={(item) => `${item.id}`}
+        extraData={state.imageArr}
+      />
+      <TouchableOpacity onPress={createAlbom} style={style.creatButton}>
+        <Text style={style.creatButtonLabel}>create</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={}>
-        <Text>download1</Text>
-      </TouchableOpacity> */}
     </View>
   );
 };
+
+const style = StyleSheet.create({
+  constainer: {flex: 1},
+  input: {height: 40, borderColor: 'gray', borderWidth: 1},
+  creatButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    borderColor: 'blue',
+    borderWidth: 1,
+    borderRadius: 30,
+    padding: 10,
+  },
+  creatButtonLabel: {
+    color: 'blue',
+  },
+});

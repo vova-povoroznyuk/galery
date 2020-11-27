@@ -6,13 +6,18 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-simple-toast';
 
 import Navigator from '../navigation';
+import createDir from '../utils/createDir';
+import {rootDirPath} from '../constants';
 
 const App = () => {
+  useEffect(() => {
+    createDir(rootDirPath);
+  }, []);
   try {
     return (
       <>
