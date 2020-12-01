@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, View, FlatList, StyleSheet} from 'react-native';
 import KeyGenerator from '../utils/keyGenerator';
 import {rootDirPath} from '../constants';
 import RNFetchBlob from 'rn-fetch-blob';
+import createDir from '../utils/createDir';
 
 const initialState = {
   loading: true,
@@ -25,10 +26,9 @@ const getAlboms = (dispatch) => {
 export default ({navigation}) => {
   const keyGenerator = new KeyGenerator();
   const [state, dispatch] = useReducer(reducer, initialState);
-  useEffect(() => {
-    getAlboms(dispatch);
+  useEffect(async () => {
+    createDir(rootDirPath, () => getAlboms(dispatch));
   }, []);
-  console.log(state);
   if (state.loading) {
     return <Text>loading...</Text>;
   } else {

@@ -15,7 +15,7 @@ import {rootDirPath} from '../constants';
 import RNFetchBlob from 'rn-fetch-blob';
 import Item from '../component/ImageItem';
 import Toast from 'react-native-simple-toast';
-import BackgroundTask from 'react-native-background-task';
+// import BackgroundTask from 'react-native-background-task';
 
 import useStore from '../utils/useStore';
 import {URL} from '../constants';
@@ -51,10 +51,10 @@ const createAlbomDir = (name) => {
     });
   }
 };
-BackgroundTask.define(() => {
-  console.log('Hello from a background task');
-  BackgroundTask.finish();
-});
+// BackgroundTask.define(() => {
+//   console.log('Hello from a background task');
+//   BackgroundTask.finish();
+// });
 export default ({navigation}) => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
@@ -73,7 +73,7 @@ export default ({navigation}) => {
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState === 'background') {
-      BackgroundTask.schedule();
+      // BackgroundTask.schedule();
     }
     if (
       appState.current.match(/inactive|background/) &&

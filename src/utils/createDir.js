@@ -2,7 +2,7 @@ import RNFetchBlob from 'rn-fetch-blob';
 
 import {PermissionsAndroid} from 'react-native';
 
-const creatDir = async (path) => {
+const creatDir = async (path, callback) => {
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -16,6 +16,9 @@ const creatDir = async (path) => {
           RNFetchBlob.fs.mkdir(path).catch((err) => {
             console.log(err);
           });
+        if (callback) {
+          callback();
+        }
       });
     }
   } catch (err) {

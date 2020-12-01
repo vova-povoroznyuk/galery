@@ -15,9 +15,6 @@ import createDir from '../utils/createDir';
 import {rootDirPath} from '../constants';
 
 const App = () => {
-  useEffect(() => {
-    createDir(rootDirPath);
-  }, []);
   try {
     return (
       <>
