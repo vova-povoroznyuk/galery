@@ -1,17 +1,25 @@
 import React from 'react';
 import {TouchableOpacity, Image, StyleSheet, View} from 'react-native';
+import {LongPressGestureHandler, State} from 'react-native-gesture-handler';
 
-const Item = ({data, addImage, isCheck}) => {
-  const getOpacity = () => (isCheck ? 1 : 0.5);
+const Item = ({data, addImage, isCheck, isSelect, changeSelect}) => {
   return (
-    <View
-      style={[
-        style.container,
-        {
-          opacity: isCheck ? 1 : 0.6,
-        },
-      ]}>
-      <TouchableOpacity onPress={addImage} style={style.button}>
+    <LongPressGestureHandler
+      onHandlerStateChange={({nativeEvent}) => {
+        if (nativeEvent.state === State.ACTIVE) {
+          changeSelect();
+        } else if (nativeEvent.state === State.FAILED && isSelect) {
+          addImage();
+        }
+      }}
+      minDurationMs={800}>
+      <View
+        style={[
+          style.container,
+          {
+            // opacity: isCheck ? 1 : 0.6,
+          },
+        ]}>
         <Image
           source={{
             uri: data.url,
@@ -19,15 +27,17 @@ const Item = ({data, addImage, isCheck}) => {
           resizeMode="cover"
           style={style.image}
         />
-      </TouchableOpacity>
-      <View style={style.checkbox}>
-        <View
-          style={[
-            style.checkboxInside,
-            {backgroundColor: isCheck ? 'blue' : 'transparent'},
-          ]}></View>
+        {isSelect ? (
+          <View style={style.checkbox}>
+            <View
+              style={[
+                style.checkboxInside,
+                {backgroundColor: isCheck ? 'blue' : 'transparent'},
+              ]}></View>
+          </View>
+        ) : null}
       </View>
-    </View>
+    </LongPressGestureHandler>
   );
 };
 const style = StyleSheet.create({

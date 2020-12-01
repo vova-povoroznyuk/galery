@@ -18,7 +18,8 @@ const useStore = () => {
         return {...state, imageArr: [...state.imageArr, action.payload]};
       case 'deleteItem':
         return {...state, imageArr: action.payload};
-
+      case 'reset':
+        return {...state, imageArr: [], albomName: ''};
       default:
         return state;
     }
@@ -26,6 +27,7 @@ const useStore = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const setName = (text) => dispatch({type: 'setName', payload: text});
   const checkImage = (url) => state.imageArr.includes(url);
+  const resetImageArr = () => dispatch({type: 'reset'});
   const addImage = (url) => {
     if (checkImage(url)) {
       const newArr = state.imageArr.filter((el) => el !== url);
@@ -40,7 +42,7 @@ const useStore = () => {
       r.json().then((res) => dispatch({payload: res, type: 'getData'}));
     });
   };
-  return [state, setName, addImage, getData];
+  return [state, setName, addImage, getData, resetImageArr];
 };
 
 export default useStore;

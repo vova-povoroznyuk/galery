@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "362061933469",
+    "firebase_url": "https://galery-529d5.firebaseio.com",
+    "project_id": "galery-529d5",
+    "storage_bucket": "galery-529d5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362061933469:android:87bb45251be542a4fadd74",
+        "android_client_info": {
+          "package_name": "com.galery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "362061933469-joco82v9a65bpgd8m1dq6j6gthd5svv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiSMJxsz6L4dOIEsZ7jkZY4GemGfTWnu4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "362061933469-joco82v9a65bpgd8m1dq6j6gthd5svv0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

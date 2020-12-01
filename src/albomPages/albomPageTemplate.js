@@ -1,23 +1,39 @@
 import React from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
-import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+import {View, Image, Text} from 'react-native';
+import GestureRecognizer from 'react-native-swipe-gestures';
 
 export default (props) => {
-  const {data, navigation, isFirst, isLast, albomParams} = props;
+  const {data, navigation, isFirst, isLast, albomParams, i} = props;
 
   const onSwipeLeft = () => {
-    console.log('left');
-    isFirst || navigation.navigate(`Page_${data - 1}`);
+    isLast || navigation.navigate(`Page_${i + 1}`);
   };
 
   const onSwipeRight = () => {
-    console.log('right');
-    isLast || navigation.navigate(`Page_${data + 1}`);
+    isFirst || navigation.navigate(`Page_${i - 1}`);
   };
 
   const config = {
     velocityThreshold: 0.3,
     directionalOffsetThreshold: 80,
+  };
+  const renderContent = () => {
+    return data ? (
+      <Image
+        resizeMode="cover"
+        source={{
+          uri:
+            'file:/storage/emulated/0/custome_galery/' +
+            '/' +
+            albomParams +
+            '/' +
+            data,
+        }}
+        style={{flex: 1, backgroundColor: 'red'}}
+      />
+    ) : (
+      <Text>{albomParams}</Text>
+    );
   };
   return (
     <GestureRecognizer
@@ -26,24 +42,9 @@ export default (props) => {
       config={config}
       style={{
         flex: 1,
+        backgroundColor: 'red',
       }}>
-      <View>
-        <Text>albom {albomParams}</Text>
-        <Text>{data}</Text>
-        {isLast || (
-          <TouchableOpacity
-            onPress={() => navigation.navigate(`Page_${data + 1}`)}>
-            <Text>To page {data + 1}</Text>
-          </TouchableOpacity>
-        )}
-
-        {isFirst || (
-          <TouchableOpacity
-            onPress={() => navigation.navigate(`Page_${data - 1}`)}>
-            <Text>To page {data - 1}</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      <View style={{flex: 1}}>{renderContent()}</View>
     </GestureRecognizer>
   );
 };

@@ -1,41 +1,47 @@
 import React, {useReducer, useEffect} from 'react';
 import {Text, TouchableOpacity, View, FlatList, StyleSheet} from 'react-native';
 import KeyGenerator from '../utils/keyGenerator';
+import {rootDirPath} from '../constants';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const initialState = {
   loading: true,
-  data: [],
+  alboms: [],
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'getData':
-      return {data: action.payload, loading: false};
+    case 'getAlboms':
+      return {alboms: action.payload, loading: false};
     default:
       return state;
   }
 }
-const getData = (dispatch) => {
-  fetch('https://jsonplaceholder.typicode.com/photos').then((r) =>
-    r.json().then((res) => dispatch({payload: res, type: 'getData'})),
-  );
+const getAlboms = (dispatch) => {
+  RNFetchBlob.fs
+    .ls(rootDirPath)
+    .then((alboms) => dispatch({payload: alboms, type: 'getAlboms'}));
 };
 export default ({navigation}) => {
   const keyGenerator = new KeyGenerator();
   const [state, dispatch] = useReducer(reducer, initialState);
-  useEffect(() => getData(dispatch), []);
+  useEffect(() => {
+    getAlboms(dispatch);
+  }, []);
+  console.log(state);
   if (state.loading) {
-    return <Text>Loading...</Text>;
+    return <Text>loading...</Text>;
   } else {
     return (
       <View style={style.viewContainer}>
-        <Text>Alboms</Text>
+        <Text style={style.caption}>Alboms</Text>
         <FlatList
-          data={[1, 2, 3, 4, 5]}
+          data={state.alboms}
           renderItem={({item}) => (
             <TouchableOpacity
+              style={style.albomButton}
               onPress={() => navigation.navigate('AlbomStack', {data: item})}>
-              <Text>go to albom</Text>
+              <Text style={style.albomLabel}>{item}</Text>
             </TouchableOpacity>
           )}
           keyExtractor={() => keyGenerator.createKey()}
@@ -48,9 +54,23 @@ export default ({navigation}) => {
 const style = StyleSheet.create({
   viewContainer: {
     flex: 1,
+    padding: 10,
   },
+  caption: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  albomButton: {
+    borderColor: 'black',
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 25,
+    marginBottom: 10,
+  },
+  albomLabel: {},
   createButton: {
-    borderRadius: 1000000,
+    borderRadius: 100,
     borderWidth: 1,
     borderColor: 'blue',
     width: 50,
